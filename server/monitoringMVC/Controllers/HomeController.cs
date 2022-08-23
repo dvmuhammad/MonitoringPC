@@ -27,8 +27,6 @@ namespace monitoringMVC.Controllers
         public IActionResult GetDisk()
         {
             var resultDisk = PostgresDataBase.GetDataDisk();
-
-            ViewBag.Disk = JsonSerializer.Serialize(resultDisk);
             return View(resultDisk);
         }
 
