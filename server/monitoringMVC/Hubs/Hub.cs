@@ -1,41 +1,32 @@
-using System;
 using System.Collections.Generic;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.SignalR;
-using monitoringMVC.DB;
 using monitoringMVC.Models;
-using Newtonsoft.Json;
-using Npgsql;
-using JsonSerializer = System.Text.Json.JsonSerializer;
+using static System.Text.Json.JsonSerializer;
+using static monitoringMVC.DB.PostgresDataBase;
 
 namespace monitoringMVC.Hubs
 {
     public class DataHub : Hub
     {
-        public async Task ReceiveData(string harddisk,string rmemory, string prosc)
+        // Receive data from the console application.
+        public void ReceiveData(string harddisk,string rmemory, string prosc)
         {
-            var disks = JsonSerializer.Deserialize<List<Disk>>(harddisk);
+            var disks = Deserialize<List<Disk>>(harddisk);
             
-            var rams = JsonSerializer.Deserialize<List<Ram>>(rmemory);
-            var process = JsonSerializer.Deserialize<List<Process>>(prosc);
-            
-            
+            var rams = Deserialize<List<Ram>>(rmemory);
+            var process = Deserialize<List<Process>>(prosc);
+
+            // Disk
             foreach (var disk in disks)
-            {
-                PostgresDataBase.SaveDataDisk(disk);
-            }
+                SaveDataDisk(disk);
 
+            // Ram
             foreach (var ram in rams)
-            {
-                PostgresDataBase.SaveDataRam(ram);
-            }
+                SaveDataRam(ram);
 
+            // Cpu
             foreach (var prosec in process)
-            {
-                PostgresDataBase.SaveDataProcess(prosec);
-            }
-            
+                SaveDataProcess(prosec);
         }
     }
-    
 }

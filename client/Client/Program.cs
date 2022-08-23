@@ -12,9 +12,11 @@ namespace Client
 {
     public static class Data
     {
+        // Static methods for getting system information. Like ram, cpu and disk space
         public static (List<DiskDto>,List<RamDto>,List<ProcessesDto>) GetData()
         {
-            PerformanceCounter ramFree = new PerformanceCounter("Memory", "Available MBytes");
+            // Get ram information
+            var ramFree = new PerformanceCounter("Memory", "Available MBytes");
             var gcMemoryInfo = GC.GetGCMemoryInfo();
             var installedMemory = gcMemoryInfo.TotalAvailableMemoryBytes;
             var physicalMemory = (double) installedMemory / 1048576.0;
@@ -23,7 +25,7 @@ namespace Client
                 new RamDto($"{physicalMemory}", $"{ramFree.NextValue()}")
             };
 
-            
+            // Get processes utilization
             List<ProcessesDto> processesDtos = new List<ProcessesDto>();
              foreach (Process proc in Process.GetProcesses()) {
                  using (PerformanceCounter pcProcess = new PerformanceCounter("Process", "% Processor Time", proc.ProcessName)) {
@@ -32,8 +34,8 @@ namespace Client
                  }
              }
             
-             
-            List<DiskDto> diskDtos = new List<DiskDto>();
+            // Get disk info
+            List<DiskDto> diskDtos = new();
             foreach (var drive in DriveInfo.GetDrives())
             { 
                 try
@@ -51,22 +53,23 @@ namespace Client
     class Program
     {
 
-        static void Main(string[] args)
+        static async Task Main(string[] args)
         {
-            
-            HubConnection connection;
-            connection = new HubConnectionBuilder()
-                .WithUrl("https://localhost:5001/hub")
+            const string url = "https://localhost:5001/hub";
+            var connection = new HubConnectionBuilder()
+                .WithUrl(url)
                 .WithAutomaticReconnect()
                 .Build();
-            connection.StartAsync();
             
-            var result = Data.GetData();
-            var jsonDisk = JsonSerializer.Serialize(result.Item1);
-            var jsonRam=JsonSerializer.Serialize(result.Item2);
-            var jsonProcess = JsonSerializer.Serialize(result.Item3);
+            // Start the websocket connection
+            await connection.StartAsync();
             
-            connection.InvokeAsync("ReceiveData", jsonDisk,jsonRam,jsonProcess).GetAwaiter().GetResult();
+            var (diskDtos, ramDtos, processesDtos) = Data.GetData();
+            var jsonDisk = JsonSerializer.Serialize(diskDtos);
+            var jsonRam=JsonSerializer.Serialize(ramDtos);
+            var jsonProcess = JsonSerializer.Serialize(processesDtos);
+
+            await connection.InvokeAsync("ReceiveData", jsonDisk, jsonRam, jsonProcess);
         }
     }
 }

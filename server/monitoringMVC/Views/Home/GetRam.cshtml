@@ -1,7 +1,16 @@
 @model List<Ram>
-
-@foreach (var item in Model)
-{
-    <p>@item.FreeRam</p>
-    <p>@item.TotalRam</p>
-}
+<table class="table table-hover table-striped table-dark">
+    <tr>
+        <th>Obshit</th>
+        <th>fuck %</th>
+    </tr>
+    
+    @foreach (var item in Model)
+    {
+        <tr>
+        <td>@(double.Parse(item.TotalRam) / 1000) Gb</td>
+        <td>@(double.Parse(item.FreeRam) / 1000) Gb</td>
+        </tr>
+    }
+    
+</table>

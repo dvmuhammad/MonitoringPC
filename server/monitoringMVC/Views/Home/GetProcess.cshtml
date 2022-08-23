@@ -1,7 +1,16 @@
 @model List<Process>
-
-@foreach (var item in Model)
-{
-    <p>@item.Processes</p>
-    <p>@item.Cpu</p>
-}
+<table class="table table-hover table-striped table-dark">
+    <tr>
+        <th>Process name</th>
+        <th>Cpu fuck %</th>
+    </tr>
+    
+    @foreach (var item in Model)
+    {
+        <tr>
+        <td>@item.Processes</td>
+        <td>@item.Cpu %</td>
+        </tr>
+    }
+    
+</table>

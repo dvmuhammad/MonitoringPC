@@ -2,6 +2,8 @@
     ViewData["Title"] = "Home Page";
 }
 
-<h4>@Html.ActionLink("Оперативная память","GetRam","Home")</h4>
-<h4>@Html.ActionLink("Загруженность ЦП","GetProcess","Home")</h4>
-<h4>@Html.ActionLink("Состояние дисков","GetDisk","Home")</h4>
+<div class="btn-group-lg mt-4 d-flex justify-content-around align-items-center">
+    <a asp-action="GetRam" class="btn btn-warning">Оперативная память</a>
+    <a asp-action="GetProcess" class="btn btn-primary">Загруженность ЦП</a>
+    <a asp-action="GetDisk" class="btn btn-info">Состояние дисков</a>
+</div>
