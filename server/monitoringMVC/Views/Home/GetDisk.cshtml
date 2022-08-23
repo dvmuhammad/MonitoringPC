@@ -1,0 +1,8 @@
+@model List<Disk>
+
+@foreach (var item in Model)
+{
+    <p>@item.Name</p>
+    <p>@item.SizeDisk</p>
+    <p>@item.FreeSizeDisk</p>
+}
